@@ -25,6 +25,7 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
+        img { max-width:100%; border-radius:8px; margin:10px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -46,7 +47,7 @@ DASHBOARD_HTML = """
         <p>System Status • Last updated: {{ now }}</p>
 
         <div class="card">
-            <h3>📱 Generate Social Media Post</h3>
+            <h3>📱 Generate Social Media Post + Image</h3>
             <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
             <button onclick="generatePost()">Generate Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
@@ -60,7 +61,6 @@ DASHBOARD_HTML = """
     </div>
 
     <script>
-        let currentCaption = "";
         let currentPrompt = "";
 
         async function generatePost() {
@@ -69,34 +69,48 @@ DASHBOARD_HTML = """
             resultDiv.innerHTML = "Generating post...";
             resultDiv.style.display = "block";
 
-            try {
-                const response = await fetch('/generate_post', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({topic: topic})
-                });
-                const data = await response.json();
-                
-                currentCaption = data.caption;
-                currentPrompt = data.image_prompt;
+            const response = await fetch('/generate_post', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({topic: topic})
+            });
+            const data = await response.json();
+            
+            currentPrompt = data.image_prompt;
 
-                resultDiv.innerHTML = `
-                    <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                    <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
-                    <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                    <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button>
-                `;
-            } catch(e) {
-                resultDiv.innerHTML = "Error generating post. Please try again.";
-            }
+            resultDiv.innerHTML = `
+                <strong>CAPTION:</strong><br>${data.caption}<br><br>
+                <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
+                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button><br><br>
+                <button onclick="generateImage()">🎨 Generate Real Image</button>
+            `;
         }
 
         function copyCaption() {
-            navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Caption copied!"));
+            navigator.clipboard.writeText(document.querySelector('#result strong').nextSibling.textContent.trim()).then(() => alert("✅ Caption copied!"));
         }
 
         function copyPrompt() {
             navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!"));
+        }
+
+        async function generateImage() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML += "<br><br>Generating image with Grok...";
+            
+            const response = await fetch('/generate_image', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prompt: currentPrompt})
+            });
+            const data = await response.json();
+            
+            if (data.image_url) {
+                resultDiv.innerHTML += `<br><img src="${data.image_url}" alt="Generated Image" style="max-width:100%; margin-top:10px;">`;
+            } else {
+                resultDiv.innerHTML += "<br>Image generation failed. Try again.";
+            }
         }
     </script>
 </body>
@@ -120,6 +134,16 @@ def generate_post():
     topic = data.get('topic', 'recent project')
     result = generator.generate_post(topic)
     return jsonify(result)
+
+@app.route('/generate_image', methods=['POST'])
+def generate_image():
+    data = request.get_json()
+    prompt = data.get('prompt')
+    try:
+        result = generator.generate_image(prompt)
+        return jsonify(result)
+    except:
+        return jsonify({"image_url": None})
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
