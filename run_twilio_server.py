@@ -2,6 +2,7 @@ from flask import Flask, request, render_template_string, session, redirect, url
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from src.social_content import SocialContentGenerator
 
 load_dotenv()
 
@@ -9,6 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
+generator = SocialContentGenerator()
 
 DASHBOARD_HTML = """
 <!DOCTYPE html>
@@ -20,8 +22,6 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        table { width:100%; border-collapse:collapse; }
-        th, td { padding:12px; text-align:left; border-bottom:1px solid #eee; }
     </style>
 </head>
 <body>
@@ -42,14 +42,12 @@ DASHBOARD_HTML = """
         <h2>Welcome back, Lee! 👋</h2>
         <p>System Status • Last updated: {{ now }}</p>
 
-        <!-- Social Media Section -->
         <div class="card">
             <h3>📱 Social Media Manager</h3>
-            <p><strong>AI can now:</strong> Create posts • Generate images • Reply to comments • Schedule content</p>
-            <button onclick="alert('Social post generation coming next - tell me a topic!')">Generate New Post</button>
+            <p>AI can create posts with images for Instagram & Facebook</p>
+            <button onclick="alert('Social post generation ready! Tell the AI a topic like \"kitchen remodel\" to generate a post.')">Generate New Social Post</button>
         </div>
 
-        <!-- Other sections remain -->
         <div class="card">
             <h3>✅ System Status</h3>
             <p>Grok AI: Online | Twilio SMS: Ready | Social Media: Active</p>
