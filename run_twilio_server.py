@@ -25,7 +25,6 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; line-height:1.6; }
     </style>
 </head>
 <body>
@@ -48,18 +47,9 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Generate Social Media Post</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel" style="width:100%; padding:12px; margin-bottom:15px;">
             <button onclick="generatePost()">Generate Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
-        </div>
-
-        <div class="card">
-            <h3>🖼️ How to Post (Easy 3 Steps for Lee)</h3>
-            <div class="instructions">
-                1. Click <strong>"Copy Caption"</strong><br>
-                2. Click <strong>"Copy Image Prompt"</strong><br>
-                3. Go to Grok → Paste prompt → Generate image → Post on Instagram/Facebook
-            </div>
         </div>
 
         <div class="card">
