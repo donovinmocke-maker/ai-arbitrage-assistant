@@ -83,22 +83,18 @@ DASHBOARD_HTML = """
                 <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
                 <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
                 <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button><br><br>
-                <button onclick="generateImage()">🎨 Generate Real Image</button>
+                <button onclick="generateRealImage()">🎨 Generate Real Image</button>
             `;
         }
 
-        function copyCaption() {
-            navigator.clipboard.writeText(document.querySelector('#result strong').nextSibling.textContent.trim()).then(() => alert("✅ Caption copied!"));
-        }
+        function copyCaption() { navigator.clipboard.writeText(document.querySelector('#result').innerText.split('Copy Caption')[0].trim()); alert("✅ Caption copied!"); }
+        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
 
-        function copyPrompt() {
-            navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!"));
-        }
-
-        async function generateImage() {
+        async function generateRealImage() {
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML += "<br><br>Generating image with Grok...";
-            
+            const btn = resultDiv.querySelector('button[onclick="generateRealImage()"]');
+            if (btn) btn.innerHTML = "Generating image...";
+
             const response = await fetch('/generate_image', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -107,9 +103,9 @@ DASHBOARD_HTML = """
             const data = await response.json();
             
             if (data.image_url) {
-                resultDiv.innerHTML += `<br><img src="${data.image_url}" alt="Generated Image" style="max-width:100%; margin-top:10px;">`;
+                resultDiv.innerHTML += `<br><br><strong>Generated Image:</strong><br><img src="${data.image_url}" alt="Generated Image">`;
             } else {
-                resultDiv.innerHTML += "<br>Image generation failed. Try again.";
+                resultDiv.innerHTML += "<br><br>Image generation failed. Try again.";
             }
         }
     </script>
@@ -142,8 +138,8 @@ def generate_image():
     try:
         result = generator.generate_image(prompt)
         return jsonify(result)
-    except:
-        return jsonify({"image_url": None})
+    except Exception as e:
+        return jsonify({"image_url": None, "error": str(e)})
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
