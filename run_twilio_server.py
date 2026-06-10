@@ -22,7 +22,8 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        .post-result { background:#f0fdf4; border-left:4px solid #22c55e; padding:15px; margin-top:15px; white-space:pre-wrap; }
+        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; white-space:pre-wrap; }
+        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
     </style>
 </head>
 <body>
@@ -46,8 +47,8 @@ DASHBOARD_HTML = """
         <!-- Social Media Generator -->
         <div class="card">
             <h3>📱 Generate Social Media Post</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, recent project" style="width:100%; padding:12px; margin-bottom:10px;">
-            <button onclick="generatePost()" style="padding:12px 20px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer;">Generate Post</button>
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:10px;">
+            <button onclick="generatePost()" style="width:100%;">Generate Instagram / Facebook Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
 
@@ -62,7 +63,7 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "recent remodeling project";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating post...";
+            resultDiv.innerHTML = "<strong>Generating professional post...</strong>";
             resultDiv.style.display = "block";
 
             const response = await fetch('/generate_post', {
@@ -71,7 +72,12 @@ DASHBOARD_HTML = """
                 body: JSON.stringify({topic: topic})
             });
             const data = await response.json();
-            resultDiv.innerHTML = `<strong>CAPTION:</strong><br>${data.caption}<br><br><strong>IMAGE PROMPT:</strong><br>${data.image_prompt}`;
+            
+            resultDiv.innerHTML = `
+                <strong>CAPTION:</strong><br>${data.caption}<br><br>
+                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                <strong>HASHTAGS:</strong><br>${data.hashtags || '#CCPalmsLLC #HomeRemodeling #FloridaContractor'}
+            `;
         }
     </script>
 </body>
@@ -94,10 +100,24 @@ def generate_post():
     data = request.get_json()
     topic = data.get('topic', 'recent project')
     content = generator.generate_post(topic)
-    # Simple parsing (you can improve this)
-    caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip()
-    image_prompt = content.split("IMAGE_PROMPT:")[-1].strip() if "IMAGE_PROMPT:" in content else "Professional photo of home improvement project"
-    return jsonify({"caption": caption, "image_prompt": image_prompt})
+    
+    # Improved parsing
+    caption = "No caption generated"
+    image_prompt = "No image prompt"
+    hashtags = "#CCPalmsLLC #HomeImprovement"
+    
+    if "CAPTION:" in content:
+        caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip()
+    if "IMAGE_PROMPT:" in content:
+        image_prompt = content.split("IMAGE_PROMPT:")[-1].strip()
+    if "HASHTAGS:" in content:
+        hashtags = content.split("HASHTAGS:")[-1].strip()
+    
+    return jsonify({
+        "caption": caption,
+        "image_prompt": image_prompt,
+        "hashtags": hashtags
+    })
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
