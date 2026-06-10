@@ -22,9 +22,8 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; white-space:pre-wrap; }
+        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
-        .copy-btn { background:#22c55e; }
     </style>
 </head>
 <body>
@@ -47,8 +46,8 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Generate Social Media Post</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:15px;">
-            <button onclick="generatePost()">Generate Instagram / Facebook Post</button>
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
+            <button onclick="generatePost()">Generate Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
 
@@ -61,35 +60,30 @@ DASHBOARD_HTML = """
 
     <script>
         async function generatePost() {
-            const topic = document.getElementById('topic').value || "recent remodeling project";
+            const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "<strong>Generating post...</strong>";
+            resultDiv.innerHTML = "⏳ Generating post... Please wait.";
             resultDiv.style.display = "block";
 
             try {
                 const response = await fetch('/generate_post', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({topic: topic})
                 });
+
+                if (!response.ok) throw new Error("Server error");
+
                 const data = await response.json();
                 
                 resultDiv.innerHTML = `
-                    <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                    <button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Caption</button><br><br>
-                    <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                    <button class="copy-btn" onclick="copyToClipboard('${data.image_prompt.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Image Prompt</button>
+                    <strong>CAPTION:</strong><br>${data.caption || 'No caption'}<br><br>
+                    <strong>IMAGE PROMPT:</strong><br>${data.image_prompt || 'No prompt'}<br><br>
+                    <strong>HASHTAGS:</strong><br>${data.hashtags || '#CCPalmsLLC'}
                 `;
             } catch(e) {
-                resultDiv.innerHTML = "Error generating post. Please try again.";
+                resultDiv.innerHTML = `<strong>Error:</strong> ${e.message}. Please try again or check server logs.`;
             }
-        }
-
-        function copyToClipboard(text) {
-            text = text.replace(/\\\\n/g, '\n');
-            navigator.clipboard.writeText(text).then(() => {
-                alert("✅ Copied to clipboard!");
-            });
         }
     </script>
 </body>
@@ -109,29 +103,28 @@ def dashboard():
 
 @app.route('/generate_post', methods=['POST'])
 def generate_post():
-    data = request.get_json()
-    topic = data.get('topic', 'recent project')
-    content = generator.generate_post(topic)
-    
-    caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip() if "CAPTION:" in content else content
-    image_prompt = "Professional photo of home improvement project"
-    hashtags = "#CCPalmsLLC #HomeRemodeling"
-    
-    if "IMAGE_PROMPT:" in content:
-        parts = content.split("IMAGE_PROMPT:")
-        caption = parts[0].replace("CAPTION:", "").strip()
-        remaining = parts[1]
-        if "HASHTAGS:" in remaining:
-            image_prompt = remaining.split("HASHTAGS:")[0].strip()
-            hashtags = remaining.split("HASHTAGS:")[-1].strip()
-        else:
-            image_prompt = remaining.strip()
-    
-    return jsonify({
-        "caption": caption,
-        "image_prompt": image_prompt,
-        "hashtags": hashtags
-    })
+    try:
+        data = request.get_json()
+        topic = data.get('topic', 'recent project')
+        content = generator.generate_post(topic)
+        
+        caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip() if "CAPTION:" in content else content
+        image_prompt = "Professional photo of home improvement project"
+        hashtags = "#CCPalmsLLC #HomeRemodeling #FloridaContractor"
+        
+        if "IMAGE_PROMPT:" in content:
+            parts = content.split("IMAGE_PROMPT:")
+            caption = parts[0].replace("CAPTION:", "").strip()
+            remaining = parts[1]
+            if "HASHTAGS:" in remaining:
+                image_prompt = remaining.split("HASHTAGS:")[0].strip()
+                hashtags = remaining.split("HASHTAGS:")[-1].strip()
+            else:
+                image_prompt = remaining.strip()
+        
+        return jsonify({"caption": caption, "image_prompt": image_prompt, "hashtags": hashtags})
+    except Exception as e:
+        return jsonify({"caption": f"Error: {str(e)}", "image_prompt": "", "hashtags": ""})
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
