@@ -22,9 +22,9 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
-        button { padding:10px 16px; background:#1e40af; color:white; border:none; border-radius:6px; cursor:pointer; margin:5px 5px 5px 0; }
-        .copy-btn { background:#22c55e; font-weight:bold; }
+        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; white-space:pre-wrap; }
+        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
+        .copy-btn { background:#22c55e; }
     </style>
 </head>
 <body>
@@ -47,8 +47,8 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Generate Social Media Post</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:10px;">
-            <button onclick="generatePost()" style="width:100%;">Generate Instagram / Facebook Post</button>
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:15px;">
+            <button onclick="generatePost()">Generate Instagram / Facebook Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
 
@@ -63,32 +63,32 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "recent remodeling project";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating professional post...";
+            resultDiv.innerHTML = "<strong>Generating post...</strong>";
             resultDiv.style.display = "block";
 
-            const response = await fetch('/generate_post', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({topic: topic})
-            });
-            const data = await response.json();
-            
-            resultDiv.innerHTML = `
-                <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                <button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Caption</button><br><br>
-                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                <button class="copy-btn" onclick="copyToClipboard('${data.image_prompt.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Image Prompt</button><br><br>
-                <strong>HASHTAGS:</strong><br>${data.hashtags}
-            `;
+            try {
+                const response = await fetch('/generate_post', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({topic: topic})
+                });
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <strong>CAPTION:</strong><br>${data.caption}<br><br>
+                    <button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Caption</button><br><br>
+                    <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                    <button class="copy-btn" onclick="copyToClipboard('${data.image_prompt.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Image Prompt</button>
+                `;
+            } catch(e) {
+                resultDiv.innerHTML = "Error generating post. Please try again.";
+            }
         }
 
         function copyToClipboard(text) {
-            // Replace escaped newlines
             text = text.replace(/\\\\n/g, '\n');
             navigator.clipboard.writeText(text).then(() => {
                 alert("✅ Copied to clipboard!");
-            }).catch(() => {
-                alert("Failed to copy. Please select and copy manually.");
             });
         }
     </script>
@@ -115,7 +115,7 @@ def generate_post():
     
     caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip() if "CAPTION:" in content else content
     image_prompt = "Professional photo of home improvement project"
-    hashtags = "#CCPalmsLLC #HomeRemodeling #FloridaContractor"
+    hashtags = "#CCPalmsLLC #HomeRemodeling"
     
     if "IMAGE_PROMPT:" in content:
         parts = content.split("IMAGE_PROMPT:")
