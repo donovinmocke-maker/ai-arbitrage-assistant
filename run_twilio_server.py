@@ -111,12 +111,17 @@ DASHBOARD_HTML = """
 
         function renderGallery() {
             const gallery = document.getElementById('gallery');
-            gallery.innerHTML = savedPosts.map(post => `
+            gallery.innerHTML = savedPosts.map((post, index) => `
                 <div class="gallery-item">
                     <small>${post.date}</small><br>
                     <p>${post.caption.substring(0, 100)}...</p>
+                    <button onclick="copySavedCaption(${index})" style="margin-top:8px;">Copy Caption</button>
                 </div>
             `).join('');
+        }
+
+        function copySavedCaption(index) {
+            navigator.clipboard.writeText(savedPosts[index].caption).then(() => alert("✅ Caption copied!"));
         }
 
         let savedPosts = [];
