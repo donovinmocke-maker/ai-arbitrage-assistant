@@ -48,8 +48,8 @@ DASHBOARD_HTML = """
         </div>
         
         <div class="card">
-            <h3>🏠 Your AI Assistant for CC Palms LLC</h3>
-            <p>It answers texts from homeowners, schedules remodeling jobs, manages leads, and generates social media posts for your contracting business.</p>
+            <h3>🏠 CC Palms LLC AI Assistant</h3>
+            <p>Your AI handles customer texts, schedules remodeling & plumbing jobs, manages leads, and creates social media content for your contracting business.</p>
         </div>
         {% endif %}
     </div>
@@ -70,7 +70,7 @@ def dashboard():
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
-    print("📱 SMS received - CC Palms mode")
+    print("📱 CC Palms SMS received")
     return "OK", 200
 
 if __name__ == "__main__":
