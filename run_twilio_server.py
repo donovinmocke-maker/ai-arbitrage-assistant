@@ -25,7 +25,7 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; line-height:1.5; }
+        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; }
     </style>
 </head>
 <body>
@@ -54,11 +54,11 @@ DASHBOARD_HTML = """
         </div>
 
         <div class="card">
-            <h3>🖼️ How to Create the Image (2 Steps)</h3>
+            <h3>🖼️ How to Create the Image (Easy 2 Steps)</h3>
             <div class="instructions">
                 1. Click <strong>"Copy Image Prompt"</strong><br>
-                2. Go to <strong>Grok</strong> (x.com/grok) → Paste the prompt → Say "Generate image"<br>
-                <strong>Done!</strong> Download and post with the copied caption.
+                2. Go to <strong>Grok</strong> (x.com/grok) → Paste the prompt → Type "Generate image"<br><br>
+                <strong>Done!</strong> Download the image and post it with the copied caption.
             </div>
         </div>
 
@@ -76,7 +76,7 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating...";
+            resultDiv.innerHTML = "Generating post...";
             resultDiv.style.display = "block";
 
             const response = await fetch('/generate_post', {
