@@ -48,11 +48,8 @@ DASHBOARD_HTML = """
         </div>
         
         <div class="card">
-            <h3>🏠 How Your AI Helps CC Palms LLC</h3>
-            <p>• Answers texts from homeowners about remodeling, plumbing, electrical<br>
-               • Schedules site visits and jobs<br>
-               • Manages leads and follow-ups<br>
-               • Creates social media posts showcasing your work</p>
+            <h3>🏠 CC Palms LLC AI Assistant</h3>
+            <p>Your AI answers homeowner texts, schedules remodeling jobs, manages leads, and creates social media posts for your contracting business.</p>
         </div>
         {% endif %}
     </div>

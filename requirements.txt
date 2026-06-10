@@ -1,0 +1,9 @@
+flask==3.1.0
+gunicorn==23.0.0
+python-dotenv==1.0.1
+openai==1.61.0
+twilio==9.10.9
+EOF
+
+cat > Procfile << 'EOT'
+web: gunicorn run_twilio_server:app
