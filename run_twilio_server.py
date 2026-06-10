@@ -11,7 +11,7 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 generator = SocialContentGenerator()
-saved_posts = []  # Simple in-memory gallery (we can make it persistent later)
+saved_posts = []
 
 DASHBOARD_HTML = """
 <!DOCTYPE html>
@@ -26,8 +26,8 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .gallery-item { border:1px solid #ddd; border-radius:8px; padding:10px; background:white; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top:15px; }
+        .gallery-item { border:1px solid #ddd; border-radius:8px; padding:12px; background:white; }
     </style>
 </head>
 <body>
@@ -92,26 +92,29 @@ DASHBOARD_HTML = """
                 <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
                 <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
                 <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button><br><br>
-                <button onclick="savePost()">💾 Save to Gallery</button>
+                <button onclick="saveToGallery()">💾 Save to Gallery</button>
             `;
         }
 
-        function copyCaption() { navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Copied!")); }
-        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Copied!")); }
+        function copyCaption() { navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Caption copied!")); }
+        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
 
-        function savePost() {
-            const post = {caption: currentCaption, prompt: currentPrompt, date: new Date().toLocaleDateString()};
-            savedPosts.push(post);
+        function saveToGallery() {
+            savedPosts.push({
+                caption: currentCaption,
+                prompt: currentPrompt,
+                date: new Date().toLocaleDateString()
+            });
             renderGallery();
-            alert("Post saved to gallery!");
+            alert("✅ Post saved to gallery!");
         }
 
         function renderGallery() {
             const gallery = document.getElementById('gallery');
-            gallery.innerHTML = savedPosts.map((post, i) => `
+            gallery.innerHTML = savedPosts.map(post => `
                 <div class="gallery-item">
                     <small>${post.date}</small><br>
-                    <strong>${post.caption.substring(0, 80)}...</strong>
+                    <p>${post.caption.substring(0, 100)}...</p>
                 </div>
             `).join('');
         }
