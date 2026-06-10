@@ -25,7 +25,6 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        img { max-width:100%; border-radius:8px; margin:10px 0; }
     </style>
 </head>
 <body>
@@ -47,9 +46,9 @@ DASHBOARD_HTML = """
         <p>System Status • Last updated: {{ now }}</p>
 
         <div class="card">
-            <h3>📱 Generate Social Media Post + Image</h3>
+            <h3>📱 Generate Social Media Post</h3>
             <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
-            <button onclick="generatePost()">Generate Post + Image</button>
+            <button onclick="generatePost()">Generate Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
 
@@ -64,28 +63,22 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "⏳ Generating...";
+            resultDiv.innerHTML = "Generating...";
             resultDiv.style.display = "block";
 
-            try {
-                const response = await fetch('/generate_post', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({topic: topic})
-                });
-                const data = await response.json();
-                
-                let html = `<strong>CAPTION:</strong><br>${data.caption}<br><br>`;
-                if (data.image_url) {
-                    html += `<img src="${data.image_url}" alt="Generated Image"><br><br>`;
-                }
-                html += `<strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>`;
-                html += `<button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'")}')">📋 Copy Caption</button>`;
-                
-                resultDiv.innerHTML = html;
-            } catch(e) {
-                resultDiv.innerHTML = "Error generating post. Please try again.";
-            }
+            const response = await fetch('/generate_post', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({topic: topic})
+            });
+            const data = await response.json();
+            
+            resultDiv.innerHTML = `
+                <strong>CAPTION:</strong><br>${data.caption}<br><br>
+                <button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'")}')">📋 Copy Caption</button><br><br>
+                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                <button class="copy-btn" onclick="copyToClipboard('${data.image_prompt.replace(/'/g, "\\'")}')">📋 Copy Image Prompt</button>
+            `;
         }
 
         function copyToClipboard(text) {
