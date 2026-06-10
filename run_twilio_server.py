@@ -23,7 +23,7 @@ DASHBOARD_HTML = """
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
-        img { max-width:100%; border-radius:8px; margin:10px 0; }
+        img { max-width:100%; border-radius:8px; margin:10px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
     </style>
 </head>
@@ -47,7 +47,7 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Generate Social Media Post + Image</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:15px;">
             <button onclick="generatePost()">Generate Post + Image</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
@@ -63,7 +63,7 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "⏳ Generating post and image...";
+            resultDiv.innerHTML = "⏳ Generating post and image with Grok...";
             resultDiv.style.display = "block";
 
             const response = await fetch('/generate_post', {
@@ -73,13 +73,13 @@ DASHBOARD_HTML = """
             });
             const data = await response.json();
             
-            resultDiv.innerHTML = `
-                <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                <strong>IMAGE:</strong><br>
-                <img src="${data.image_url}" alt="Generated Image" style="max-width:100%;">
-                <br><br>
-                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}
-            `;
+            let html = `<strong>CAPTION:</strong><br>${data.caption}<br><br>`;
+            if (data.image_url) {
+                html += `<strong>Generated Image:</strong><br><img src="${data.image_url}" alt="Generated Image"><br><br>`;
+            }
+            html += `<strong>IMAGE PROMPT:</strong><br>${data.image_prompt}`;
+            
+            resultDiv.innerHTML = html;
         }
     </script>
 </body>
@@ -101,25 +101,8 @@ def dashboard():
 def generate_post():
     data = request.get_json()
     topic = data.get('topic', 'recent project')
-    content = generator.generate_post(topic)
-    
-    # Extract parts
-    caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip() if "CAPTION:" in content else content
-    image_prompt = "Professional photo of home improvement project"
-    
-    if "IMAGE_PROMPT:" in content:
-        parts = content.split("IMAGE_PROMPT:")
-        caption = parts[0].replace("CAPTION:", "").strip()
-        image_prompt = parts[1].strip()
-    
-    # For now, we simulate image URL (we can add real Grok image gen later)
-    image_url = "https://picsum.photos/id/1015/800/600"  # Placeholder - replace with real Grok image later
-    
-    return jsonify({
-        "caption": caption,
-        "image_prompt": image_prompt,
-        "image_url": image_url
-    })
+    result = generator.generate_post(topic)
+    return jsonify(result)
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
