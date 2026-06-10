@@ -24,7 +24,7 @@ DASHBOARD_HTML = """
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:10px 16px; background:#1e40af; color:white; border:none; border-radius:6px; cursor:pointer; margin:5px 5px 5px 0; }
-        .copy-btn { background:#22c55e; }
+        .copy-btn { background:#22c55e; font-weight:bold; }
     </style>
 </head>
 <body>
@@ -75,16 +75,20 @@ DASHBOARD_HTML = """
             
             resultDiv.innerHTML = `
                 <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                <button class="copy-btn" onclick="copyText('${data.caption.replace(/'/g, "\\'")}')">📋 Copy Caption</button><br><br>
+                <button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Caption</button><br><br>
                 <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                <button class="copy-btn" onclick="copyText('${data.image_prompt.replace(/'/g, "\\'")}')">📋 Copy Image Prompt</button><br><br>
+                <button class="copy-btn" onclick="copyToClipboard('${data.image_prompt.replace(/'/g, "\\'").replace(/\n/g, "\\\\n")}')">📋 Copy Image Prompt</button><br><br>
                 <strong>HASHTAGS:</strong><br>${data.hashtags}
             `;
         }
 
-        function copyText(text) {
+        function copyToClipboard(text) {
+            // Replace escaped newlines
+            text = text.replace(/\\\\n/g, '\n');
             navigator.clipboard.writeText(text).then(() => {
                 alert("✅ Copied to clipboard!");
+            }).catch(() => {
+                alert("Failed to copy. Please select and copy manually.");
             });
         }
     </script>
