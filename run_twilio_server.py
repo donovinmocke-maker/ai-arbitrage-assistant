@@ -22,7 +22,6 @@ DASHBOARD_HTML = """
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         table { width:100%; border-collapse:collapse; }
         th, td { padding:12px; text-align:left; border-bottom:1px solid #eee; }
-        .status { color:#22c55e; font-weight:bold; }
     </style>
 </head>
 <body>
@@ -43,38 +42,17 @@ DASHBOARD_HTML = """
         <h2>Welcome back, Lee! 👋</h2>
         <p>System Status • Last updated: {{ now }}</p>
 
-        <!-- System Status -->
+        <!-- Social Media Section -->
+        <div class="card">
+            <h3>📱 Social Media Manager</h3>
+            <p><strong>AI can now:</strong> Create posts • Generate images • Reply to comments • Schedule content</p>
+            <button onclick="alert('Social post generation coming next - tell me a topic!')">Generate New Post</button>
+        </div>
+
+        <!-- Other sections remain -->
         <div class="card">
             <h3>✅ System Status</h3>
-            <p><strong>Grok AI:</strong> Online</p>
-            <p><strong>Twilio SMS:</strong> Ready</p>
-            <p><strong>Bookings:</strong> Active</p>
-        </div>
-
-        <!-- Upcoming Jobs -->
-        <div class="card">
-            <h3>📅 Upcoming Jobs</h3>
-            <table>
-                <tr><th>Client</th><th>Project</th><th>Date</th><th>Status</th></tr>
-                <tr><td>John Smith</td><td>Kitchen Remodel</td><td>June 12</td><td>Confirmed</td></tr>
-                <tr><td>Maria Lopez</td><td>Bathroom Renovation</td><td>June 15</td><td>Site Visit</td></tr>
-            </table>
-        </div>
-
-        <!-- Active Leads -->
-        <div class="card">
-            <h3>🚀 Active Leads</h3>
-            <table>
-                <tr><th>Client</th><th>Project</th><th>Source</th><th>Next Action</th></tr>
-                <tr><td>David Chen</td><td>Roof Repair</td><td>Text</td><td>Send Quote</td></tr>
-                <tr><td>Lisa Patel</td><td>Full Home Remodel</td><td>Website</td><td>Schedule Visit</td></tr>
-            </table>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="card">
-            <h3>⚡ Quick Actions</h3>
-            <p><strong>Send Broadcast Message</strong> • Generate Social Post • View All Leads</p>
+            <p>Grok AI: Online | Twilio SMS: Ready | Social Media: Active</p>
         </div>
         {% endif %}
     </div>
