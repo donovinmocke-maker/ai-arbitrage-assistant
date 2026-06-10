@@ -25,7 +25,7 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        .ready-to-post { background:#fefce8; border:2px solid #eab308; padding:20px; border-radius:12px; margin-top:15px; }
+        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; line-height:1.6; }
     </style>
 </head>
 <body>
@@ -54,10 +54,11 @@ DASHBOARD_HTML = """
         </div>
 
         <div class="card">
-            <h3>📤 Ready to Post</h3>
-            <div id="ready-to-post" class="ready-to-post" style="display:none;">
-                <strong>CAPTION + IMAGE PROMPT READY</strong><br><br>
-                <button class="copy-btn" onclick="copyAll()">📋 Copy All for Posting</button>
+            <h3>🖼️ How to Post (Easy 3 Steps for Lee)</h3>
+            <div class="instructions">
+                1. Click <strong>"Copy Caption"</strong><br>
+                2. Click <strong>"Copy Image Prompt"</strong><br>
+                3. Go to Grok → Paste prompt → Generate image → Post on Instagram/Facebook
             </div>
         </div>
 
@@ -90,16 +91,14 @@ DASHBOARD_HTML = """
 
             resultDiv.innerHTML = `
                 <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}
+                <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
+                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button>
             `;
-
-            document.getElementById('ready-to-post').style.display = "block";
         }
 
-        function copyAll() {
-            const fullText = currentCaption + "\n\n" + currentPrompt;
-            navigator.clipboard.writeText(fullText).then(() => alert("✅ All content copied! Ready to post on Instagram or Facebook."));
-        }
+        function copyCaption() { navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Caption copied!")); }
+        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
     </script>
 </body>
 </html>
