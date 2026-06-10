@@ -63,26 +63,36 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating...";
+            resultDiv.innerHTML = "Generating post...";
             resultDiv.style.display = "block";
 
-            const response = await fetch('/generate_post', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({topic: topic})
-            });
-            const data = await response.json();
-            
-            resultDiv.innerHTML = `
-                <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                <button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'")}')">📋 Copy Caption</button><br><br>
-                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                <button class="copy-btn" onclick="copyToClipboard('${data.image_prompt.replace(/'/g, "\\'")}')">📋 Copy Image Prompt</button>
-            `;
+            try {
+                const response = await fetch('/generate_post', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({topic: topic})
+                });
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <strong>CAPTION:</strong><br>${data.caption}<br><br>
+                    <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
+                    <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                    <button class="copy-btn" onclick="copyImagePrompt()">📋 Copy Image Prompt</button>
+                `;
+                window.currentCaption = data.caption;
+                window.currentPrompt = data.image_prompt;
+            } catch(e) {
+                resultDiv.innerHTML = "Error generating post. Please try again.";
+            }
         }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => alert("✅ Copied!"));
+        function copyCaption() {
+            navigator.clipboard.writeText(window.currentCaption).then(() => alert("✅ Caption copied!"));
+        }
+
+        function copyImagePrompt() {
+            navigator.clipboard.writeText(window.currentPrompt).then(() => alert("✅ Image Prompt copied!"));
         }
     </script>
 </body>
