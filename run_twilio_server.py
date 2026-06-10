@@ -11,7 +11,6 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 generator = SocialContentGenerator()
-saved_posts = []
 
 DASHBOARD_HTML = """
 <!DOCTYPE html>
@@ -26,9 +25,7 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top:15px; }
-        .gallery-item { border:1px solid #ddd; border-radius:8px; padding:12px; background:white; }
-        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; }
+        img { max-width:100%; border-radius:8px; margin:10px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -50,25 +47,10 @@ DASHBOARD_HTML = """
         <p>System Status • Last updated: {{ now }}</p>
 
         <div class="card">
-            <h3>📱 Generate Social Media Post</h3>
+            <h3>📱 Generate Social Media Post + Image</h3>
             <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
-            <button onclick="generatePost()">Generate Post</button>
+            <button onclick="generatePost()">1. Generate Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
-        </div>
-
-        <div class="card">
-            <h3>🖼️ How to Create the Image (Simple Steps)</h3>
-            <div class="instructions">
-                1. Click <strong>"Copy Image Prompt"</strong><br>
-                2. Go to <strong>Grok</strong> (on x.com or Grok app)<br>
-                3. Paste the prompt and say "Generate image"<br>
-                4. Download the image and post with the caption
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>🖼️ Saved Posts Gallery</h3>
-            <div id="gallery" class="gallery"></div>
         </div>
 
         <div class="card">
@@ -79,13 +61,12 @@ DASHBOARD_HTML = """
     </div>
 
     <script>
-        let currentCaption = "";
         let currentPrompt = "";
 
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating...";
+            resultDiv.innerHTML = "Generating post...";
             resultDiv.style.display = "block";
 
             const response = await fetch('/generate_post', {
@@ -95,7 +76,6 @@ DASHBOARD_HTML = """
             });
             const data = await response.json();
             
-            currentCaption = data.caption;
             currentPrompt = data.image_prompt;
 
             resultDiv.innerHTML = `
@@ -103,39 +83,30 @@ DASHBOARD_HTML = """
                 <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
                 <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
                 <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button><br><br>
-                <button onclick="saveToGallery()">💾 Save to Gallery</button>
+                <button onclick="generateRealImage()">🎨 Generate Real Image</button>
             `;
         }
 
-        function copyCaption() { navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Caption copied!")); }
+        function copyCaption() { navigator.clipboard.writeText(document.querySelector('#result').innerText.split('Copy Caption')[0].trim()); alert("✅ Caption copied!"); }
         function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
 
-        function saveToGallery() {
-            savedPosts.push({
-                caption: currentCaption,
-                prompt: currentPrompt,
-                date: new Date().toLocaleDateString()
+        async function generateRealImage() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML += "<br><br>🎨 Generating image with Grok...";
+
+            const response = await fetch('/generate_image', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prompt: currentPrompt})
             });
-            renderGallery();
-            alert("✅ Post saved to gallery!");
+            const data = await response.json();
+            
+            if (data.image_url) {
+                resultDiv.innerHTML += `<br><img src="${data.image_url}" alt="Generated Image">`;
+            } else {
+                resultDiv.innerHTML += "<br>Image generation failed. Try again or use the prompt in Grok.";
+            }
         }
-
-        function renderGallery() {
-            const gallery = document.getElementById('gallery');
-            gallery.innerHTML = savedPosts.map((post, index) => `
-                <div class="gallery-item">
-                    <small>${post.date}</small><br>
-                    <p>${post.caption.substring(0, 100)}...</p>
-                    <button onclick="copySavedCaption(${index})" style="margin-top:8px; width:auto;">Copy Caption</button>
-                </div>
-            `).join('');
-        }
-
-        function copySavedCaption(index) {
-            navigator.clipboard.writeText(savedPosts[index].caption).then(() => alert("✅ Caption copied!"));
-        }
-
-        let savedPosts = [];
     </script>
 </body>
 </html>
@@ -158,6 +129,16 @@ def generate_post():
     topic = data.get('topic', 'recent project')
     result = generator.generate_post(topic)
     return jsonify(result)
+
+@app.route('/generate_image', methods=['POST'])
+def generate_image():
+    data = request.get_json()
+    prompt = data.get('prompt')
+    try:
+        result = generator.generate_image(prompt)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"image_url": None})
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
