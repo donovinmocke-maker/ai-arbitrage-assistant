@@ -22,8 +22,9 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; white-space:pre-wrap; line-height:1.5; }
-        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; }
+        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
+        button { padding:10px 16px; background:#1e40af; color:white; border:none; border-radius:6px; cursor:pointer; margin:5px 5px 5px 0; }
+        .copy-btn { background:#22c55e; }
     </style>
 </head>
 <body>
@@ -47,7 +48,7 @@ DASHBOARD_HTML = """
         <div class="card">
             <h3>📱 Generate Social Media Post</h3>
             <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:10px;">
-            <button onclick="generatePost()">Generate Instagram / Facebook Post</button>
+            <button onclick="generatePost()" style="width:100%;">Generate Instagram / Facebook Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
 
@@ -74,9 +75,17 @@ DASHBOARD_HTML = """
             
             resultDiv.innerHTML = `
                 <strong>CAPTION:</strong><br>${data.caption}<br><br>
+                <button class="copy-btn" onclick="copyText('${data.caption.replace(/'/g, "\\'")}')">📋 Copy Caption</button><br><br>
                 <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
+                <button class="copy-btn" onclick="copyText('${data.image_prompt.replace(/'/g, "\\'")}')">📋 Copy Image Prompt</button><br><br>
                 <strong>HASHTAGS:</strong><br>${data.hashtags}
             `;
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("✅ Copied to clipboard!");
+            });
         }
     </script>
 </body>
@@ -100,7 +109,6 @@ def generate_post():
     topic = data.get('topic', 'recent project')
     content = generator.generate_post(topic)
     
-    # Clean parsing
     caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip() if "CAPTION:" in content else content
     image_prompt = "Professional photo of home improvement project"
     hashtags = "#CCPalmsLLC #HomeRemodeling #FloridaContractor"
@@ -108,9 +116,12 @@ def generate_post():
     if "IMAGE_PROMPT:" in content:
         parts = content.split("IMAGE_PROMPT:")
         caption = parts[0].replace("CAPTION:", "").strip()
-        image_prompt = parts[1].split("HASHTAGS:")[0].strip() if "HASHTAGS:" in parts[1] else parts[1].strip()
-        if "HASHTAGS:" in content:
-            hashtags = content.split("HASHTAGS:")[-1].strip()
+        remaining = parts[1]
+        if "HASHTAGS:" in remaining:
+            image_prompt = remaining.split("HASHTAGS:")[0].strip()
+            hashtags = remaining.split("HASHTAGS:")[-1].strip()
+        else:
+            image_prompt = remaining.strip()
     
     return jsonify({
         "caption": caption,
