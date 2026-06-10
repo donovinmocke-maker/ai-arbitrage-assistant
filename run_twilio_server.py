@@ -28,6 +28,7 @@ DASHBOARD_HTML = """
         .copy-btn { background:#22c55e; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top:15px; }
         .gallery-item { border:1px solid #ddd; border-radius:8px; padding:12px; background:white; }
+        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; }
     </style>
 </head>
 <body>
@@ -53,6 +54,16 @@ DASHBOARD_HTML = """
             <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
             <button onclick="generatePost()">Generate Post</button>
             <div id="result" class="post-result" style="display:none;"></div>
+        </div>
+
+        <div class="card">
+            <h3>🖼️ How to Create the Image (Simple Steps)</h3>
+            <div class="instructions">
+                1. Click <strong>"Copy Image Prompt"</strong><br>
+                2. Go to <strong>Grok</strong> (on x.com or Grok app)<br>
+                3. Paste the prompt and say "Generate image"<br>
+                4. Download the image and post with the caption
+            </div>
         </div>
 
         <div class="card">
@@ -115,7 +126,7 @@ DASHBOARD_HTML = """
                 <div class="gallery-item">
                     <small>${post.date}</small><br>
                     <p>${post.caption.substring(0, 100)}...</p>
-                    <button onclick="copySavedCaption(${index})" style="margin-top:8px;">Copy Caption</button>
+                    <button onclick="copySavedCaption(${index})" style="margin-top:8px; width:auto;">Copy Caption</button>
                 </div>
             `).join('');
         }
