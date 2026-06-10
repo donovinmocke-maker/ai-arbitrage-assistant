@@ -47,7 +47,7 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Generate Social Media Post + Image</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%; padding:12px; margin-bottom:15px;">
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:15px;">
             <button onclick="generatePost()">Generate Post + Image</button>
             <div id="result" class="post-result" style="display:none;"></div>
         </div>
@@ -76,9 +76,9 @@ DASHBOARD_HTML = """
             let html = `<strong>CAPTION:</strong><br>${data.caption}<br><br>`;
             if (data.image_url) {
                 html += `<strong>Generated Image:</strong><br><img src="${data.image_url}" alt="Generated Image"><br><br>`;
+            } else {
+                html += `<strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br><em>(Image generation unavailable - using prompt instead)</em>`;
             }
-            html += `<strong>IMAGE PROMPT:</strong><br>${data.image_prompt}`;
-            
             resultDiv.innerHTML = html;
         }
     </script>

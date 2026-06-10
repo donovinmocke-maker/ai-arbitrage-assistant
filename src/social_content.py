@@ -13,12 +13,12 @@ class SocialContentGenerator:
         self.business_name = "CC Palms LLC"
 
     def generate_post(self, topic="recent project"):
-        # Generate caption + prompt
+        # Text prompt for caption + image description
         text_prompt = f"""Create a professional social media post for {self.business_name} about: {topic}
 
 Return in this exact format:
 CAPTION: [engaging caption]
-IMAGE_PROMPT: [detailed image prompt for Grok image model]"""
+IMAGE_PROMPT: [detailed prompt for image generation]"""
 
         text_response = self.client.chat.completions.create(
             model="grok-4.3",
@@ -30,19 +30,21 @@ IMAGE_PROMPT: [detailed image prompt for Grok image model]"""
 
         # Extract parts
         caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip() if "CAPTION:" in content else content
-        image_prompt = content.split("IMAGE_PROMPT:")[-1].strip() if "IMAGE_PROMPT:" in content else f"Professional photo of {topic} for home improvement marketing"
+        image_prompt = content.split("IMAGE_PROMPT:")[-1].strip() if "IMAGE_PROMPT:" in content else f"Professional photo of {topic} for {self.business_name}"
 
-        # Generate real image with Grok
+        # Try to generate real image
+        image_url = None
         try:
             image_response = self.client.images.generate(
-                model="grok-2-image",  # Grok's image model
-                prompt=image_prompt,
+                model="grok-2-image-1212",   # Current Grok image model
+                prompt=image_prompt + ", high quality, realistic, marketing style",
                 n=1,
                 size="1024x1024"
             )
             image_url = image_response.data[0].url
-        except:
-            image_url = None  # Fallback if image gen fails
+        except Exception as e:
+            image_url = None
+            print("Image generation failed:", str(e))
 
         return {
             "caption": caption,
