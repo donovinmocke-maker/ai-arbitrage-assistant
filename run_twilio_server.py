@@ -23,8 +23,9 @@ DASHBOARD_HTML = """
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
-        img { max-width:100%; border-radius:8px; margin:10px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
+        .copy-btn { background:#22c55e; }
+        img { max-width:100%; border-radius:8px; margin:10px 0; }
     </style>
 </head>
 <body>
@@ -63,23 +64,32 @@ DASHBOARD_HTML = """
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "⏳ Generating post and image with Grok...";
+            resultDiv.innerHTML = "⏳ Generating...";
             resultDiv.style.display = "block";
 
-            const response = await fetch('/generate_post', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({topic: topic})
-            });
-            const data = await response.json();
-            
-            let html = `<strong>CAPTION:</strong><br>${data.caption}<br><br>`;
-            if (data.image_url) {
-                html += `<strong>Generated Image:</strong><br><img src="${data.image_url}" alt="Generated Image"><br><br>`;
-            } else {
-                html += `<strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br><em>(Image generation unavailable - using prompt instead)</em>`;
+            try {
+                const response = await fetch('/generate_post', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({topic: topic})
+                });
+                const data = await response.json();
+                
+                let html = `<strong>CAPTION:</strong><br>${data.caption}<br><br>`;
+                if (data.image_url) {
+                    html += `<img src="${data.image_url}" alt="Generated Image"><br><br>`;
+                }
+                html += `<strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>`;
+                html += `<button class="copy-btn" onclick="copyToClipboard('${data.caption.replace(/'/g, "\\'")}')">📋 Copy Caption</button>`;
+                
+                resultDiv.innerHTML = html;
+            } catch(e) {
+                resultDiv.innerHTML = "Error generating post. Please try again.";
             }
-            resultDiv.innerHTML = html;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => alert("✅ Copied!"));
         }
     </script>
 </body>
