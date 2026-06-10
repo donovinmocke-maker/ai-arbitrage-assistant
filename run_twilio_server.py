@@ -11,6 +11,7 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 generator = SocialContentGenerator()
+saved_posts = []
 
 DASHBOARD_HTML = """
 <!DOCTYPE html>
@@ -25,7 +26,9 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        .instructions { background:#fefce8; padding:15px; border-radius:8px; font-size:14px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top:15px; }
+        .gallery-item { border:1px solid #ddd; border-radius:8px; padding:12px; background:white; }
+        img { max-width:100%; border-radius:8px; margin:8px 0; }
     </style>
 </head>
 <body>
@@ -54,12 +57,8 @@ DASHBOARD_HTML = """
         </div>
 
         <div class="card">
-            <h3>🖼️ How to Create the Image (Easy 2 Steps)</h3>
-            <div class="instructions">
-                1. Click <strong>"Copy Image Prompt"</strong><br>
-                2. Go to <strong>Grok</strong> (x.com/grok) → Paste the prompt → Type "Generate image"<br><br>
-                <strong>Done!</strong> Download the image and post it with the copied caption.
-            </div>
+            <h3>🖼️ Saved Posts Gallery</h3>
+            <div id="gallery" class="gallery"></div>
         </div>
 
         <div class="card">
@@ -72,11 +71,12 @@ DASHBOARD_HTML = """
     <script>
         let currentCaption = "";
         let currentPrompt = "";
+        let currentImageUrl = "";
 
         async function generatePost() {
             const topic = document.getElementById('topic').value || "kitchen remodel";
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating post...";
+            resultDiv.innerHTML = "Generating...";
             resultDiv.style.display = "block";
 
             const response = await fetch('/generate_post', {
@@ -93,12 +93,42 @@ DASHBOARD_HTML = """
                 <strong>CAPTION:</strong><br>${data.caption}<br><br>
                 <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
                 <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button>
+                <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button><br><br>
+                <button onclick="saveToGallery()">💾 Save to Gallery</button>
             `;
         }
 
         function copyCaption() { navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Caption copied!")); }
         function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
+
+        function saveToGallery() {
+            savedPosts.push({
+                caption: currentCaption,
+                prompt: currentPrompt,
+                image_url: currentImageUrl,
+                date: new Date().toLocaleDateString()
+            });
+            renderGallery();
+            alert("✅ Post saved to gallery!");
+        }
+
+        function renderGallery() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = savedPosts.map(post => `
+                <div class="gallery-item">
+                    <small>${post.date}</small><br>
+                    <p>${post.caption.substring(0, 80)}...</p>
+                    ${post.image_url ? `<img src="${post.image_url}" style="max-width:100%;">` : ''}
+                    <button onclick="copySavedCaption('${post.caption}')" style="margin-top:8px;">Copy Caption</button>
+                </div>
+            `).join('');
+        }
+
+        function copySavedCaption(caption) {
+            navigator.clipboard.writeText(caption).then(() => alert("✅ Caption copied!"));
+        }
+
+        let savedPosts = [];
     </script>
 </body>
 </html>
