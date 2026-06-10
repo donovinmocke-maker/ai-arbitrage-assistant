@@ -25,7 +25,7 @@ DASHBOARD_HTML = """
         .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
         button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
         .copy-btn { background:#22c55e; }
-        img { max-width:100%; border-radius:8px; margin:10px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+        img { max-width:100%; border-radius:8px; margin:10px 0; }
     </style>
 </head>
 <body>
@@ -87,13 +87,12 @@ DASHBOARD_HTML = """
             `;
         }
 
-        function copyCaption() { navigator.clipboard.writeText(document.querySelector('#result').innerText.split('Copy Caption')[0].trim()); alert("✅ Caption copied!"); }
-        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
+        function copyCaption() { navigator.clipboard.writeText(document.querySelector('#result').innerText.split('Copy Caption')[0].trim()); alert("✅ Copied!"); }
+        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Copied!")); }
 
         async function generateRealImage() {
             const resultDiv = document.getElementById('result');
-            const btn = resultDiv.querySelector('button[onclick="generateRealImage()"]');
-            if (btn) btn.innerHTML = "Generating image...";
+            resultDiv.innerHTML += "<br><br>🎨 Generating image with Grok...";
 
             const response = await fetch('/generate_image', {
                 method: 'POST',
@@ -103,9 +102,9 @@ DASHBOARD_HTML = """
             const data = await response.json();
             
             if (data.image_url) {
-                resultDiv.innerHTML += `<br><br><strong>Generated Image:</strong><br><img src="${data.image_url}" alt="Generated Image">`;
+                resultDiv.innerHTML += `<br><img src="${data.image_url}" alt="Generated Image">`;
             } else {
-                resultDiv.innerHTML += "<br><br>Image generation failed. Try again.";
+                resultDiv.innerHTML += "<br>Image generation failed. Try again or use the prompt manually in Grok.";
             }
         }
     </script>
@@ -139,7 +138,7 @@ def generate_image():
         result = generator.generate_image(prompt)
         return jsonify(result)
     except Exception as e:
-        return jsonify({"image_url": None, "error": str(e)})
+        return jsonify({"image_url": None})
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
