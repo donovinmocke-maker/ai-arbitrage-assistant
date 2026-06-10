@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, session, redirect, url_for
+from flask import Flask, request, render_template_string, session, redirect, url_for, jsonify
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -22,6 +22,7 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+        .post-result { background:#f0fdf4; border-left:4px solid #22c55e; padding:15px; margin-top:15px; white-space:pre-wrap; }
     </style>
 </head>
 <body>
@@ -42,10 +43,12 @@ DASHBOARD_HTML = """
         <h2>Welcome back, Lee! 👋</h2>
         <p>System Status • Last updated: {{ now }}</p>
 
+        <!-- Social Media Generator -->
         <div class="card">
-            <h3>📱 Social Media Manager</h3>
-            <p>AI can create posts with images for Instagram & Facebook</p>
-            <button onclick="alert('Social post generation ready! Tell the AI a topic like \"kitchen remodel\" to generate a post.')">Generate New Social Post</button>
+            <h3>📱 Generate Social Media Post</h3>
+            <input type="text" id="topic" placeholder="E.g. kitchen remodel, bathroom renovation, recent project" style="width:100%; padding:12px; margin-bottom:10px;">
+            <button onclick="generatePost()" style="padding:12px 20px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer;">Generate Post</button>
+            <div id="result" class="post-result" style="display:none;"></div>
         </div>
 
         <div class="card">
@@ -54,6 +57,23 @@ DASHBOARD_HTML = """
         </div>
         {% endif %}
     </div>
+
+    <script>
+        async function generatePost() {
+            const topic = document.getElementById('topic').value || "recent remodeling project";
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "Generating post...";
+            resultDiv.style.display = "block";
+
+            const response = await fetch('/generate_post', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({topic: topic})
+            });
+            const data = await response.json();
+            resultDiv.innerHTML = `<strong>CAPTION:</strong><br>${data.caption}<br><br><strong>IMAGE PROMPT:</strong><br>${data.image_prompt}`;
+        }
+    </script>
 </body>
 </html>
 """
@@ -68,6 +88,16 @@ def dashboard():
     logged_in = session.get('logged_in', False)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return render_template_string(DASHBOARD_HTML, logged_in=logged_in, now=now)
+
+@app.route('/generate_post', methods=['POST'])
+def generate_post():
+    data = request.get_json()
+    topic = data.get('topic', 'recent project')
+    content = generator.generate_post(topic)
+    # Simple parsing (you can improve this)
+    caption = content.split("IMAGE_PROMPT:")[0].replace("CAPTION:", "").strip()
+    image_prompt = content.split("IMAGE_PROMPT:")[-1].strip() if "IMAGE_PROMPT:" in content else "Professional photo of home improvement project"
+    return jsonify({"caption": caption, "image_prompt": image_prompt})
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
