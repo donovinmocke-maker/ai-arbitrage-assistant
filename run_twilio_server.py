@@ -20,7 +20,6 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        button { padding:14px 28px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
     </style>
 </head>
 <body>
@@ -34,10 +33,10 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Social Media Tool</h3>
-            <p>1. Type a topic (e.g. "kitchen remodel")<br>
+            <p>1. Type a topic (kitchen remodel, bathroom, etc.)<br>
                2. Click Generate Post<br>
                3. Copy the caption and image prompt</p>
-            <button onclick="alert('Social media tool is ready.\\n\\nType a topic and click Generate to create posts.')">Generate New Post</button>
+            <button onclick="alert('Social media tool is ready.\\n\\n1. Type a topic like \"kitchen remodel\"\\n2. Click Generate Post\\n3. Copy the text and use in Grok for images.')">Generate New Post</button>
         </div>
 
         <div class="card">
