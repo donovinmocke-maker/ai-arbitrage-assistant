@@ -2,6 +2,7 @@ from flask import Flask, request, render_template_string, session, redirect, url
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from src.social_content import SocialContentGenerator
 
 load_dotenv()
 
@@ -9,6 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
+generator = SocialContentGenerator()
 
 DASHBOARD_HTML = """
 <!DOCTYPE html>
@@ -20,6 +22,7 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+        button { padding:14px 28px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
     </style>
 </head>
 <body>
@@ -33,12 +36,10 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Social Media Tool</h3>
-            <p>The social media generator is ready.</p>
-            <p><strong>How to use:</strong></p>
-            <p>1. Type a topic (kitchen remodel, bathroom, etc.)<br>
-               2. Click Generate Post<br>
-               3. Copy the caption and image prompt</p>
-            <button onclick="alert('Social media tool is ready.\\n\\nType a topic and click Generate to create posts.')">Generate New Post</button>
+            <form method="post" action="/generate_post">
+                <input type="text" name="topic" placeholder="E.g. kitchen remodel, bathroom renovation" style="width:100%; padding:12px; margin-bottom:10px;">
+                <button type="submit">Generate New Post</button>
+            </form>
         </div>
 
         <div class="card">
@@ -59,6 +60,17 @@ def dashboard():
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return render_template_string(DASHBOARD_HTML, now=now)
+
+@app.route('/generate_post', methods=['POST'])
+def generate_post():
+    topic = request.form.get('topic', 'kitchen remodel')
+    result = generator.generate_post(topic)
+    return f"""
+    <h3>Generated Post</h3>
+    <p><strong>CAPTION:</strong><br>{result.get('caption', 'No caption')}</p>
+    <p><strong>IMAGE PROMPT:</strong><br>{result.get('image_prompt', 'No prompt')}</p>
+    <p><a href="/">Back to Dashboard</a></p>
+    """
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
