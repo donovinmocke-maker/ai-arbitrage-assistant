@@ -36,12 +36,12 @@ DASHBOARD_HTML = """
             <p>1. Type a topic (kitchen remodel, bathroom, etc.)<br>
                2. Click Generate Post<br>
                3. Copy the caption and image prompt</p>
-            <button onclick="alert('Social media tool is ready.\\n\\n1. Type a topic like \"kitchen remodel\"\\n2. Click Generate Post\\n3. Copy the text and use in Grok for images.')">Generate New Post</button>
+            <button onclick="alert('Social media tool is ready.\\n\\n1. Type a topic like \"kitchen remodel\"\\n2. Click Generate Post\\n3. Copy the caption and image prompt')">Generate New Post</button>
         </div>
 
         <div class="card">
             <h3>🖼️ Saved Gallery</h3>
-            <p>Bathroom and kitchen images are saved here.</p>
+            <p>Bathroom and kitchen remodel images are saved here.</p>
         </div>
     </div>
 </body>
