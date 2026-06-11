@@ -35,7 +35,7 @@ DASHBOARD_HTML = """
         <div class="card">
             <h3>📱 Social Media Tool</h3>
             <p>Generate captions and image prompts for Instagram & Facebook.</p>
-            <button onclick="alert('Social media generation is ready.\\n\\nType a topic like \"kitchen remodel\" in the input box and click Generate.')">Generate New Post</button>
+            <button onclick="alert('Social media tool is ready.\\n\\n1. Type a topic like \"kitchen remodel\"\\n2. Click Generate Post\\n3. Copy the caption and image prompt')">Generate New Post</button>
         </div>
 
         <div class="card">
