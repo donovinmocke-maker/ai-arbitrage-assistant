@@ -10,13 +10,25 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# Gallery with the real kitchen image
+# High-end kitchen gallery
 saved_posts = [
     {
         "date": "June 11, 2026",
-        "caption": "Transform your kitchen into a stunning culinary haven with CC Palms LLC! Expert remodels featuring premium materials and timeless design.",
-        "image_url": "https://picsum.photos/id/1015/800/600",  # Real generated kitchen image placeholder
-        "prompt": "Professional, bright photograph of a modern luxury kitchen remodel with white shaker cabinets, large marble island with waterfall edges, brushed gold hardware, stainless steel appliances, pendant lighting, and large windows with natural light."
+        "caption": "Elegant white & marble luxury kitchen remodel by CC Palms LLC.",
+        "image_url": "https://picsum.photos/id/1015/800/600",  # Replace with real hosted URL later
+        "prompt": "Professional bright photograph of a high-end luxury kitchen remodel featuring custom white shaker cabinets..."
+    },
+    {
+        "date": "June 11, 2026",
+        "caption": "Sophisticated modern neutral high-end kitchen transformation.",
+        "image_url": "https://picsum.photos/id/106/800/600",
+        "prompt": "Professional photograph of a luxurious modern kitchen remodel with soft gray shaker cabinets..."
+    },
+    {
+        "date": "June 11, 2026",
+        "caption": "Timeless white & gold luxury kitchen completed by CC Palms LLC.",
+        "image_url": "https://picsum.photos/id/133/800/600",
+        "prompt": "Professional high-end kitchen remodel photo with pristine white custom cabinetry..."
     }
 ]
 
@@ -31,16 +43,17 @@ DASHBOARD_HTML = """
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; }
+        .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; padding-bottom:10px; }
         .gallery-item img { width:100%; height:220px; object-fit:cover; }
-        input, button { padding:12px; margin:5px 0; font-size:16px; }
-        button { background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; }
+        input, button { padding:12px; margin:8px 0; font-size:16px; border-radius:8px; }
+        button { background:#1e40af; color:white; border:none; cursor:pointer; }
+        .copy-btn { background:#16a34a; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🏠 CC Palms LLC</h1>
-        <p><strong>Home Improvement AI Assistant</strong></p>
+        <p><strong>Premium Home Improvement AI Assistant</strong></p>
     </div>
     <div class="container">
         <h2>Welcome back, Lee! 👋</h2>
@@ -49,20 +62,20 @@ DASHBOARD_HTML = """
         <div class="card">
             <h3>📱 Generate Social Media Post</h3>
             <form method="post" action="/generate_post">
-                <input type="text" name="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%;">
+                <input type="text" name="topic" placeholder="E.g. kitchen remodel, bathroom renovation, outdoor lighting" style="width:100%;">
                 <button type="submit" style="width:100%;">Generate New Post</button>
             </form>
         </div>
 
         <div class="card">
-            <h3>🖼️ Saved Gallery</h3>
+            <h3>🖼️ Saved Gallery - High-End Kitchens</h3>
             <div class="gallery">
                 {% for post in saved_posts %}
                 <div class="gallery-item">
-                    <small>{{ post.date }}</small><br>
-                    <img src="{{ post.image_url }}" alt="Kitchen Remodel">
-                    <p><strong>{{ post.caption[:120] }}...</strong></p>
-                    <button onclick="navigator.clipboard.writeText('{{ post.caption }}'); alert('✅ Caption copied!')">Copy Caption</button>
+                    <small>{{ post.date }}</small>
+                    <img src="{{ post.image_url }}" alt="Luxury Kitchen">
+                    <p><strong>{{ post.caption }}</strong></p>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ post.caption }}'); alert('✅ Caption copied!')">Copy Caption</button>
                 </div>
                 {% endfor %}
             </div>
@@ -85,14 +98,12 @@ def dashboard():
 @app.route('/generate_post', methods=['POST'])
 def generate_post():
     topic = request.form.get('topic', 'kitchen remodel')
-    # Simple placeholder result for now
-    result = f"""
+    return f"""
     <h3>Generated Post for "{topic}"</h3>
-    <p><strong>CAPTION:</strong><br>Beautiful {topic} completed by CC Palms LLC! Ready to transform your home?</p>
-    <p><strong>IMAGE PROMPT:</strong><br>Professional photo of {topic} project.</p>
+    <p><strong>CAPTION:</strong><br>Stunning {topic} completed by CC Palms LLC – premium craftsmanship you can trust.</p>
+    <p><strong>IMAGE PROMPT:</strong><br>High-end professional photo of {topic} project in Florida style.</p>
     <a href="/">← Back to Dashboard</a>
     """
-    return result
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
