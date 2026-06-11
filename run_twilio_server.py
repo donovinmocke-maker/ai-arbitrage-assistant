@@ -10,24 +10,24 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# Reliable high-end kitchen images
+# Real high-end kitchen images (now in static folder)
 saved_posts = [
     {
         "date": "June 11, 2026",
         "caption": "Elegant white & marble luxury kitchen remodel by CC Palms LLC.",
-        "image_url": "https://picsum.photos/id/1015/800/600",
+        "image_url": "/static/images/kitchen1.jpg",
         "prompt": "High-end white shaker kitchen with marble island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Sophisticated modern neutral high-end kitchen transformation.",
-        "image_url": "https://picsum.photos/id/106/800/600",
+        "image_url": "/static/images/kitchen2.jpg",
         "prompt": "Luxury gray kitchen with large island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Timeless white & gold luxury kitchen completed by CC Palms LLC.",
-        "image_url": "https://picsum.photos/id/133/800/600",
+        "image_url": "/static/images/kitchen3.jpg",
         "prompt": "Premium white kitchen with gold accents"
     }
 ]
@@ -100,7 +100,7 @@ def generate_post():
     topic = request.form.get('topic', 'kitchen remodel')
     return f"""
     <h3>✅ Generated Post for "{topic}"</h3>
-    <p><strong>CAPTION:</strong><br>Stunning {topic} by CC Palms LLC – premium quality you can trust in Florida.</p>
+    <p><strong>CAPTION:</strong><br>Stunning {topic} by CC Palms LLC – premium quality you can trust.</p>
     <p><strong>IMAGE PROMPT:</strong><br>Professional high-end photo of luxury {topic} project.</p>
     <a href="/">← Back to Dashboard</a>
     """
