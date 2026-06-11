@@ -34,13 +34,15 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Social Media Tool</h3>
-            <p>Generate captions and image prompts for Instagram & Facebook.</p>
-            <button onclick="alert('Social media tool is ready.\\n\\n1. Type a topic like \"kitchen remodel\"\\n2. Click Generate Post\\n3. Copy the caption and image prompt')">Generate New Post</button>
+            <p>1. Type a topic (e.g. "kitchen remodel")<br>
+               2. Click Generate Post<br>
+               3. Copy the caption and image prompt</p>
+            <button onclick="alert('Social media tool is ready.\\n\\nType a topic and click Generate to create posts.')">Generate New Post</button>
         </div>
 
         <div class="card">
             <h3>🖼️ Saved Gallery</h3>
-            <p>Bathroom and kitchen remodel images are saved here for easy access.</p>
+            <p>Bathroom and kitchen images are saved here.</p>
         </div>
     </div>
 </body>
