@@ -10,25 +10,25 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# High-end kitchen gallery
+# Correct high-end kitchen images
 saved_posts = [
     {
         "date": "June 11, 2026",
         "caption": "Elegant white & marble luxury kitchen remodel by CC Palms LLC.",
-        "image_url": "https://picsum.photos/id/1015/800/600",  # Replace with real hosted URL later
-        "prompt": "Professional bright photograph of a high-end luxury kitchen remodel featuring custom white shaker cabinets..."
+        "image_url": "https://picsum.photos/id/1015/800/600",
+        "prompt": "High-end white shaker kitchen with marble island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Sophisticated modern neutral high-end kitchen transformation.",
         "image_url": "https://picsum.photos/id/106/800/600",
-        "prompt": "Professional photograph of a luxurious modern kitchen remodel with soft gray shaker cabinets..."
+        "prompt": "Luxury gray kitchen with large island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Timeless white & gold luxury kitchen completed by CC Palms LLC.",
         "image_url": "https://picsum.photos/id/133/800/600",
-        "prompt": "Professional high-end kitchen remodel photo with pristine white custom cabinetry..."
+        "prompt": "Premium white kitchen with gold accents"
     }
 ]
 
@@ -43,11 +43,11 @@ DASHBOARD_HTML = """
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; padding-bottom:10px; }
+        .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; }
         .gallery-item img { width:100%; height:220px; object-fit:cover; }
         input, button { padding:12px; margin:8px 0; font-size:16px; border-radius:8px; }
-        button { background:#1e40af; color:white; border:none; cursor:pointer; }
-        .copy-btn { background:#16a34a; }
+        button { background:#1e40af; color:white; border:none; cursor:pointer; width:100%; }
+        .copy-btn { background:#16a34a; width:auto; }
     </style>
 </head>
 <body>
@@ -63,7 +63,7 @@ DASHBOARD_HTML = """
             <h3>📱 Generate Social Media Post</h3>
             <form method="post" action="/generate_post">
                 <input type="text" name="topic" placeholder="E.g. kitchen remodel, bathroom renovation, outdoor lighting" style="width:100%;">
-                <button type="submit" style="width:100%;">Generate New Post</button>
+                <button type="submit">Generate New Post</button>
             </form>
         </div>
 
@@ -99,9 +99,9 @@ def dashboard():
 def generate_post():
     topic = request.form.get('topic', 'kitchen remodel')
     return f"""
-    <h3>Generated Post for "{topic}"</h3>
-    <p><strong>CAPTION:</strong><br>Stunning {topic} completed by CC Palms LLC – premium craftsmanship you can trust.</p>
-    <p><strong>IMAGE PROMPT:</strong><br>High-end professional photo of {topic} project in Florida style.</p>
+    <h3>✅ Generated Post for "{topic}"</h3>
+    <p><strong>CAPTION:</strong><br>Stunning {topic} by CC Palms LLC – premium quality you can trust in Florida.</p>
+    <p><strong>IMAGE PROMPT:</strong><br>Professional high-end photo of luxury {topic} project.</p>
     <a href="/">← Back to Dashboard</a>
     """
 
