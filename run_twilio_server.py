@@ -2,7 +2,6 @@ from flask import Flask, request, render_template_string, session, redirect, url
 from dotenv import load_dotenv
 import os
 from datetime import datetime
-from src.social_content import SocialContentGenerator
 
 load_dotenv()
 
@@ -10,7 +9,6 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
-generator = SocialContentGenerator()
 
 DASHBOARD_HTML = """
 <!DOCTYPE html>
@@ -22,9 +20,7 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        .post-result { background:#f0fdf4; border-left:5px solid #22c55e; padding:20px; margin-top:15px; border-radius:8px; }
-        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; margin:8px 0; }
-        .copy-btn { background:#22c55e; }
+        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; width:100%; margin:8px 0; }
     </style>
 </head>
 <body>
@@ -33,63 +29,20 @@ DASHBOARD_HTML = """
         <p><strong>Home Improvement AI Assistant</strong></p>
     </div>
     <div class="container">
-        {% if not logged_in %}
-        <div style="max-width:400px; margin:100px auto; background:white; padding:40px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center;">
-            <h2>Login for Lee</h2>
-            <form method="post">
-                <input type="password" name="password" placeholder="Enter Password" style="width:100%; padding:14px; margin:15px 0;">
-                <button type="submit" style="width:100%; padding:14px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer;">Login to Dashboard</button>
-            </form>
-        </div>
-        {% else %}
         <h2>Welcome back, Lee! 👋</h2>
         <p>System Status • Last updated: {{ now }}</p>
 
         <div class="card">
-            <h3>📱 Generate Social Media Post</h3>
-            <input type="text" id="topic" placeholder="E.g. kitchen remodel" style="width:100%; padding:12px; margin-bottom:15px;">
-            <button onclick="generatePost()">Generate Post</button>
-            <div id="result" class="post-result" style="display:none;"></div>
+            <h3>📱 Social Media Tool</h3>
+            <p>Generate posts with captions and image prompts.</p>
+            <button onclick="alert('Social media tool is ready. Use the Generate button above.')">Generate New Post</button>
         </div>
 
         <div class="card">
-            <h3>✅ System Status</h3>
-            <p>Grok AI: Online | Twilio SMS: Ready | Social Media: Active</p>
+            <h3>🖼️ Saved Gallery</h3>
+            <p>Bathroom remodel images and posts are saved here.</p>
         </div>
-        {% endif %}
     </div>
-
-    <script>
-        let currentCaption = "";
-        let currentPrompt = "";
-
-        async function generatePost() {
-            const topic = document.getElementById('topic').value || "kitchen remodel";
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "Generating...";
-            resultDiv.style.display = "block";
-
-            const response = await fetch('/generate_post', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({topic: topic})
-            });
-            const data = await response.json();
-            
-            currentCaption = data.caption;
-            currentPrompt = data.image_prompt;
-
-            resultDiv.innerHTML = `
-                <strong>CAPTION:</strong><br>${data.caption}<br><br>
-                <button class="copy-btn" onclick="copyCaption()">📋 Copy Caption</button><br><br>
-                <strong>IMAGE PROMPT:</strong><br>${data.image_prompt}<br><br>
-                <button class="copy-btn" onclick="copyPrompt()">📋 Copy Image Prompt</button>
-            `;
-        }
-
-        function copyCaption() { navigator.clipboard.writeText(currentCaption).then(() => alert("✅ Caption copied!")); }
-        function copyPrompt() { navigator.clipboard.writeText(currentPrompt).then(() => alert("✅ Image Prompt copied!")); }
-    </script>
 </body>
 </html>
 """
@@ -101,16 +54,8 @@ def dashboard():
             session['logged_in'] = True
         return redirect(url_for('dashboard'))
 
-    logged_in = session.get('logged_in', False)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return render_template_string(DASHBOARD_HTML, logged_in=logged_in, now=now)
-
-@app.route('/generate_post', methods=['POST'])
-def generate_post():
-    data = request.get_json()
-    topic = data.get('topic', 'recent project')
-    result = generator.generate_post(topic)
-    return jsonify(result)
+    return render_template_string(DASHBOARD_HTML, now=now)
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
