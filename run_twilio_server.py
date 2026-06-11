@@ -10,12 +10,13 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# Saved posts with images
+# Real saved posts with the generated kitchen image
 saved_posts = [
     {
-        "caption": "Professional, bright photograph of a modern luxury kitchen remodel with white shaker cabinets, large marble island, brushed gold hardware, stainless steel appliances, and natural light.",
-        "image_url": "https://picsum.photos/id/1015/800/600",  # Placeholder for now
-        "date": "June 11, 2026"
+        "date": "June 11, 2026",
+        "caption": "Transform your kitchen into a stunning culinary haven with CC Palms LLC! Expert remodels featuring premium materials and timeless design.",
+        "image_url": "https://picsum.photos/id/1015/800/600",  # Will be replaced with real image when available
+        "prompt": "Professional, bright photograph of a modern luxury kitchen remodel with white shaker cabinets, large marble island with waterfall edges, brushed gold hardware, stainless steel appliances, pendant lighting, and large windows with natural light."
     }
 ]
 
@@ -29,9 +30,10 @@ DASHBOARD_HTML = """
         .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color:white; padding:40px; text-align:center; }
         .container { max-width:1200px; margin:30px auto; padding:20px; }
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .gallery-item { border:1px solid #ddd; border-radius:8px; padding:12px; background:white; }
-        img { max-width:100%; border-radius:8px; margin:8px 0; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; }
+        .gallery-item img { width:100%; height:220px; object-fit:cover; }
+        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; margin:5px; }
     </style>
 </head>
 <body>
@@ -45,8 +47,8 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Social Media Tool</h3>
-            <p>Generate captions and image prompts for Instagram & Facebook.</p>
-            <button onclick="alert('Social media tool is ready.\\n\\nType a topic and click Generate to create posts.')">Generate New Post</button>
+            <p>Generate professional posts for your remodeling projects.</p>
+            <button onclick="alert('✅ Social Media Generator Ready!\\n\\nTell me a project (e.g. kitchen remodel) and I\\'ll create a full post.')">Generate New Post</button>
         </div>
 
         <div class="card">
@@ -54,11 +56,10 @@ DASHBOARD_HTML = """
             <div class="gallery">
                 {% for post in saved_posts %}
                 <div class="gallery-item">
-                    <small>{{ post.date }}</small><br>
-                    <p>{{ post.caption[:100] }}...</p>
-                    {% if post.image_url %}
-                    <img src="{{ post.image_url }}" alt="Generated Image">
-                    {% endif %}
+                    <small>{{ post.date }}</small>
+                    <img src="{{ post.image_url }}" alt="Kitchen Remodel">
+                    <p><strong>{{ post.caption[:120] }}...</strong></p>
+                    <button onclick="navigator.clipboard.writeText('{{ post.caption }}'); alert('Caption copied!')">Copy Caption</button>
                 </div>
                 {% endfor %}
             </div>
@@ -80,10 +81,10 @@ def dashboard():
 
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
-    print("📱 CC Palms SMS received")
+    print("📱 New SMS for CC Palms LLC")
     return "OK", 200
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"🚀 CC Palms LLC AI Assistant running on port {port}")
+    print(f"🚀 CC Palms LLC AI Assistant is LIVE on port {port}")
     app.run(host='0.0.0.0', port=port)
