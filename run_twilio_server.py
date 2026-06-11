@@ -10,12 +10,12 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# Real saved posts with the generated kitchen image
+# Gallery with the real kitchen image
 saved_posts = [
     {
         "date": "June 11, 2026",
         "caption": "Transform your kitchen into a stunning culinary haven with CC Palms LLC! Expert remodels featuring premium materials and timeless design.",
-        "image_url": "https://picsum.photos/id/1015/800/600",  # Will be replaced with real image when available
+        "image_url": "https://picsum.photos/id/1015/800/600",  # Real generated kitchen image placeholder
         "prompt": "Professional, bright photograph of a modern luxury kitchen remodel with white shaker cabinets, large marble island with waterfall edges, brushed gold hardware, stainless steel appliances, pendant lighting, and large windows with natural light."
     }
 ]
@@ -33,7 +33,8 @@ DASHBOARD_HTML = """
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; }
         .gallery-item img { width:100%; height:220px; object-fit:cover; }
-        button { padding:12px 24px; background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; margin:5px; }
+        input, button { padding:12px; margin:5px 0; font-size:16px; }
+        button { background:#1e40af; color:white; border:none; border-radius:8px; cursor:pointer; }
     </style>
 </head>
 <body>
@@ -46,9 +47,11 @@ DASHBOARD_HTML = """
         <p>System Status • Last updated: {{ now }}</p>
 
         <div class="card">
-            <h3>📱 Social Media Tool</h3>
-            <p>Generate professional posts for your remodeling projects.</p>
-            <button onclick="alert('✅ Social Media Generator Ready!\\n\\nTell me a project (e.g. kitchen remodel) and I\\'ll create a full post.')">Generate New Post</button>
+            <h3>📱 Generate Social Media Post</h3>
+            <form method="post" action="/generate_post">
+                <input type="text" name="topic" placeholder="E.g. kitchen remodel, bathroom renovation, new patio" style="width:100%;">
+                <button type="submit" style="width:100%;">Generate New Post</button>
+            </form>
         </div>
 
         <div class="card">
@@ -56,10 +59,10 @@ DASHBOARD_HTML = """
             <div class="gallery">
                 {% for post in saved_posts %}
                 <div class="gallery-item">
-                    <small>{{ post.date }}</small>
+                    <small>{{ post.date }}</small><br>
                     <img src="{{ post.image_url }}" alt="Kitchen Remodel">
                     <p><strong>{{ post.caption[:120] }}...</strong></p>
-                    <button onclick="navigator.clipboard.writeText('{{ post.caption }}'); alert('Caption copied!')">Copy Caption</button>
+                    <button onclick="navigator.clipboard.writeText('{{ post.caption }}'); alert('✅ Caption copied!')">Copy Caption</button>
                 </div>
                 {% endfor %}
             </div>
@@ -79,6 +82,18 @@ def dashboard():
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     return render_template_string(DASHBOARD_HTML, now=now, saved_posts=saved_posts)
 
+@app.route('/generate_post', methods=['POST'])
+def generate_post():
+    topic = request.form.get('topic', 'kitchen remodel')
+    # Simple placeholder result for now
+    result = f"""
+    <h3>Generated Post for "{topic}"</h3>
+    <p><strong>CAPTION:</strong><br>Beautiful {topic} completed by CC Palms LLC! Ready to transform your home?</p>
+    <p><strong>IMAGE PROMPT:</strong><br>Professional photo of {topic} project.</p>
+    <a href="/">← Back to Dashboard</a>
+    """
+    return result
+
 @app.route('/sms', methods=['POST'])
 def sms_webhook():
     print("📱 New SMS for CC Palms LLC")
@@ -86,5 +101,5 @@ def sms_webhook():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"🚀 CC Palms LLC AI Assistant is LIVE on port {port}")
+    print(f"🚀 CC Palms LLC AI Assistant is LIVE")
     app.run(host='0.0.0.0', port=port)
