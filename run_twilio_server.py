@@ -10,24 +10,24 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# Correct high-end kitchen images
+# Reliable high-end kitchen images
 saved_posts = [
     {
         "date": "June 11, 2026",
         "caption": "Elegant white & marble luxury kitchen remodel by CC Palms LLC.",
-        "image_url": "/static/images/kitchen1.jpg",
+        "image_url": "https://picsum.photos/id/1015/800/600",
         "prompt": "High-end white shaker kitchen with marble island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Sophisticated modern neutral high-end kitchen transformation.",
-        "image_url": "/static/images/kitchen2.jpg",
+        "image_url": "https://picsum.photos/id/106/800/600",
         "prompt": "Luxury gray kitchen with large island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Timeless white & gold luxury kitchen completed by CC Palms LLC.",
-        "image_url": "/static/images/kitchen3.jpg",
+        "image_url": "https://picsum.photos/id/133/800/600",
         "prompt": "Premium white kitchen with gold accents"
     }
 ]
@@ -44,7 +44,7 @@ DASHBOARD_HTML = """
         .card { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .gallery-item { border:1px solid #ddd; border-radius:12px; overflow:hidden; background:white; }
-        .gallery-item img { width:100%; height:220px; object-fit:cover; }
+        .gallery-item img { width:100%; height:220px; object-fit:cover; display:block; }
         input, button { padding:12px; margin:8px 0; font-size:16px; border-radius:8px; }
         button { background:#1e40af; color:white; border:none; cursor:pointer; width:100%; }
         .copy-btn { background:#16a34a; width:auto; }
@@ -100,7 +100,7 @@ def generate_post():
     topic = request.form.get('topic', 'kitchen remodel')
     return f"""
     <h3>✅ Generated Post for "{topic}"</h3>
-    <p><strong>CAPTION:</strong><br>Stunning {topic} by CC Palms LLC – premium quality you can trust.</p>
+    <p><strong>CAPTION:</strong><br>Stunning {topic} by CC Palms LLC – premium quality you can trust in Florida.</p>
     <p><strong>IMAGE PROMPT:</strong><br>Professional high-end photo of luxury {topic} project.</p>
     <a href="/">← Back to Dashboard</a>
     """
