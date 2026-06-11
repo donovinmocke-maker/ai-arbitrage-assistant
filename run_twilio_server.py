@@ -33,10 +33,12 @@ DASHBOARD_HTML = """
 
         <div class="card">
             <h3>📱 Social Media Tool</h3>
+            <p>The social media generator is ready.</p>
+            <p><strong>How to use:</strong></p>
             <p>1. Type a topic (kitchen remodel, bathroom, etc.)<br>
                2. Click Generate Post<br>
                3. Copy the caption and image prompt</p>
-            <button onclick="alert('Social media tool is ready.\\n\\n1. Type a topic like \"kitchen remodel\"\\n2. Click Generate Post\\n3. Copy the caption and image prompt')">Generate New Post</button>
+            <button onclick="alert('Social media tool is ready.\\n\\nType a topic and click Generate to create posts.')">Generate New Post</button>
         </div>
 
         <div class="card">
