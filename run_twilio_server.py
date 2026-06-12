@@ -10,24 +10,23 @@ app.secret_key = os.urandom(24)
 
 ADMIN_PASSWORD = "ccpalms2026"
 
-# Real high-end kitchen images (local files)
 saved_posts = [
     {
         "date": "June 11, 2026",
         "caption": "Elegant white & marble luxury kitchen remodel by CC Palms LLC.",
-        "image_url": "/static/images/Generated Image.jpg",
+        "image_url": "/static/images/kitchen1.jpg",
         "prompt": "High-end white shaker kitchen with marble island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Sophisticated modern neutral high-end kitchen transformation.",
-        "image_url": "/static/images/Generated Image.jpg",
+        "image_url": "/static/images/kitchen2.jpg",
         "prompt": "Luxury gray kitchen with large island"
     },
     {
         "date": "June 11, 2026",
         "caption": "Timeless white & gold luxury kitchen completed by CC Palms LLC.",
-        "image_url": "/static/images/Generated Image.jpg",
+        "image_url": "/static/images/kitchen3.jpg",
         "prompt": "Premium white kitchen with gold accents"
     }
 ]
